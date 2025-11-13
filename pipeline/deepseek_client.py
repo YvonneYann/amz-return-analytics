@@ -1,12 +1,24 @@
 from __future__ import annotations
 
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 
 from .config import DeepSeekConfig
 from .models import CandidateReview, LLMPayload, TagFragment
+
+
+DEFAULT_SYSTEM_PROMPT = (
+    "You are an Amazon US marketplace return analyst. "
+    "Always respond with valid JSON that matches the specified schema."
+)
+
+DEFAULT_INSTRUCTIONS = (
+    "阅读 review_en（英文原文）与下面的标签库（tag_library），"
+    "按 README 规范输出 JSON：review_id, review_source, review_en, review_cn, "
+    "sentiment (-1/0/1), tags[{tag_code, tag_name_cn, evidence}]。"
+)
 
 
 class DeepSeekClient:
@@ -17,23 +29,32 @@ class DeepSeekClient:
         self._api_key = config.api_key
         self._model = config.model
 
-    def annotate(self, review: CandidateReview) -> LLMPayload:
+    def annotate(
+        self,
+        review: CandidateReview,
+        tag_library: Dict[str, Dict[str, str]],
+        prompt_text: Optional[str] = None,
+    ) -> LLMPayload:
         url = f"{self._base_url}/chat/completions"
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
         }
-        system_prompt = (
-            "You are an Amazon US marketplace return analyst. "
-            "Return JSON with fields review_id, review_source, review_en, "
-            "review_cn, sentiment (-1/0/1), "
-            "tags[{tag_code, tag_name_cn, evidence}]. No prose."
-        )
+        instructions = prompt_text.strip() if prompt_text else DEFAULT_INSTRUCTIONS
+        user_payload = {
+            "instructions": instructions,
+            "review": {
+                "review_id": review.review_id,
+                "review_source": review.review_source,
+                "review_en": review.review_en,
+            },
+            "tag_library": _format_tag_library(tag_library),
+        }
         body: Dict[str, object] = {
             "model": self._model,
             "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": review.review_en},
+                {"role": "system", "content": DEFAULT_SYSTEM_PROMPT},
+                {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
             ],
             "response_format": {"type": "json_object"},
         }
@@ -58,3 +79,18 @@ class DeepSeekClient:
             sentiment=payload_dict.get("sentiment", 0),
             tags=tags,
         )
+
+
+def _format_tag_library(tag_library: Dict[str, Dict[str, str]]) -> List[Dict[str, str]]:
+    result: List[Dict[str, str]] = []
+    for code, meta in tag_library.items():
+        result.append(
+            {
+                "tag_code": code,
+                "tag_name_cn": meta.get("tag_name_cn", ""),
+                "category_name_cn": meta.get("category_name_cn", ""),
+                "definition": meta.get("definition", ""),
+                "boundary_note": meta.get("boundary_note", ""),
+            }
+        )
+    return result

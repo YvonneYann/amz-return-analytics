@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Iterable, List
+from typing import Dict, Iterable, List, Optional
 
 from .doris_client import DorisClient
 from .deepseek_client import DeepSeekClient
@@ -18,10 +18,14 @@ def step_call_llm(
     candidates: Iterable[CandidateReview],
     deepseek: DeepSeekClient,
     doris: DorisClient,
+    tag_library: Dict[str, Dict[str, str]],
+    prompt_text: Optional[str],
 ) -> List[LLMPayload]:
+    if not tag_library:
+        raise ValueError("tag_library is empty; fetch return_dim_tag before calling LLM.")
     payloads: List[LLMPayload] = []
     for review in candidates:
-        payload = deepseek.annotate(review)
+        payload = deepseek.annotate(review, tag_library, prompt_text)
         doris.upsert_return_fact_llm(payload)
         payloads.append(payload)
     logging.info("Stored %d payloads into return_fact_llm", len(payloads))

@@ -74,6 +74,7 @@ def run_step(
     candidate_input: Path | None,
     payload_output: Path | None,
     payload_input: Path | None,
+    prompt_text: str | None,
 ) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config(config_path)
@@ -98,12 +99,13 @@ def run_step(
                 logging.info("Saved candidates to %s", candidate_output)
 
         elif step == "llm":
+            tag_library = doris.fetch_dim_tag_map()
             if candidate_input:
                 candidates = _read_candidates_from_jsonl(candidate_input)
                 logging.info("Loaded %d candidates from %s", len(candidates), candidate_input)
             else:
                 candidates = step_fetch_candidates(doris, limit)
-            payloads = step_call_llm(candidates, deepseek, doris)
+            payloads = step_call_llm(candidates, deepseek, doris, tag_library, prompt_text)
             if payload_output:
                 _write_jsonl(
                     payload_output,
@@ -121,7 +123,8 @@ def run_step(
 
         elif step == "all":
             candidates = step_fetch_candidates(doris, limit)
-            payloads = step_call_llm(candidates, deepseek, doris)
+            tag_library = doris.fetch_dim_tag_map()
+            payloads = step_call_llm(candidates, deepseek, doris, tag_library, prompt_text)
             step_parse_payloads(doris, payloads=payloads)
 
         else:
@@ -165,11 +168,20 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="When running 'parse' step, optional JSONL source of payloads.",
     )
+    parser.add_argument(
+        "--prompt-file",
+        type=Path,
+        default=Path("prompt/deepseek_prompt.txt"),
+        help="Text file containing custom instructions for DeepSeek (default: prompt/deepseek_prompt.txt).",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
+    prompt_text = None
+    if args.prompt_file and args.prompt_file.exists():
+        prompt_text = args.prompt_file.read_text(encoding="utf-8")
     run_step(
         step=args.step,
         config_path=args.config,
@@ -178,4 +190,5 @@ if __name__ == "__main__":
         candidate_input=args.candidate_input,
         payload_output=args.payload_output,
         payload_input=args.payload_input,
+        prompt_text=prompt_text,
     )

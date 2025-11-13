@@ -41,8 +41,11 @@ scripts/
 
 ### `pipeline/deepseek_client.py`（LLM 调用层）
 - **流程节点**：DeepSeek 打标阶段。
-- **用途**：按 README 规范调用 DeepSeek Chat Completions API，返回结构化的 `LLMPayload`。
-- **输入**：`CandidateReview`。
+- **用途**：按 README 规范调用 DeepSeek Chat Completions API。支持同时注入：
+  - `CandidateReview`（来自 `view_return_review_snapshot`）
+  - 标签维表（`return_dim_tag` 查询结果）
+  - 自定义提示词（由 CLI `--prompt-file` 读取，若未提供则使用内置默认说明）
+- **输入**：`CandidateReview`、标签字典、可选提示词。
 - **输出**：`LLMPayload`（含 `tags[]`）。
 
 ### `pipeline/steps.py`（单节点执行逻辑）
@@ -61,6 +64,7 @@ scripts/
   - `--config config/environment.yaml`
   - `--limit N`
   - 可选 `--candidate-output/--candidate-input/--payload-output/--payload-input`
+  - `--prompt-file`（DeepSeek 调用时附带的自定义提示词，默认读取 `prompt/deepseek_prompt.txt`）
 - **输出**：
   - `candidates` 步：输出候选日志 + 可选 JSONL 文件。
   - `llm` 步：写入 `return_fact_llm`，可选输出 payload JSONL。
@@ -89,5 +93,9 @@ scripts/
    ```bash
    python scripts/pipeline.py --step all --limit 200
    ```
+
+> 额外参考：
+> - 调用 DeepSeek 的用户 payload JSON 格式，见 `docs/llm_request_template.json`。
+> - 默认提示词位于 `prompt/deepseek_prompt.txt`，可直接修改该文件而无需改动代码。
 
 通过上述拆分，可以按节点检查输入/输出数据，也方便在中断或调试时复用已有中间结果。

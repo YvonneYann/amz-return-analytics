@@ -141,7 +141,12 @@ class DorisClient:
         with self._conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT tag_code, tag_name_cn, category_name_cn
+                SELECT
+                    tag_code,
+                    tag_name_cn,
+                    category_name_cn,
+                    definition,
+                    boundary_note
                 FROM return_dim_tag
                 WHERE is_active = 1
                 """

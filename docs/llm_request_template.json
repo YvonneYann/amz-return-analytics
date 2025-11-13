@@ -1,0 +1,31 @@
+{
+  "instructions": "<请粘贴自定义提示词，例如 prompt/deepseek_prompt.txt 的内容>",
+  "review": {
+    "review_id": "<review_id from view_return_review_snapshot>",
+    "review_source": 2,
+    "review_en": "<review_en from view_return_review_snapshot>"
+  },
+  "tag_library": [
+    {
+      "tag_code": "STABILITY_TIP",
+      "tag_name_cn": "稳定性/防倾倒不足",
+      "category_name_cn": "结构与承载",
+      "definition": "使用中出现下弯、晃动、防滑失效等影响安全的问题。",
+      "boundary_note": "若尺寸根本不适配则归入尺寸/兼容性不符。"
+    },
+    {
+      "tag_code": "PARTS_DESIGN",
+      "tag_name_cn": "分区/配件设计不合理",
+      "category_name_cn": "结构与承载",
+      "definition": "配件过高/过窄/缺止倾设计导致难以稳固或压缩有效容量。",
+      "boundary_note": "若整体晃动则优先归属稳定性/防倾倒不足。"
+    },
+    {
+      "tag_code": "<更多标签...>",
+      "tag_name_cn": "<标签中文名>",
+      "category_name_cn": "<一级类目>",
+      "definition": "<标签定义>",
+      "boundary_note": "<与相近标签的边界说明>"
+    }
+  ]
+}
