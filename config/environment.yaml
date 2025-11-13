@@ -1,0 +1,11 @@
+doris:
+  host: 172.16.33.11
+  port: 9030
+  database: hyy
+  username: root
+  password: Hieyoung123
+
+deepseek:
+  base_url: https://ark.cn-beijing.volces.com/api/v3/
+  api_key: 539cbf02-a94a-4bd8-b193-e8a5165b409d
+  model: deepseek-v3-250324
