@@ -1,0 +1,5 @@
+﻿tag_filters:
+  - condition_name: level_eq_2
+    field: level
+    operator: eq
+    value: 2

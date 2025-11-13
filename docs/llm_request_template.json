@@ -1,31 +1,59 @@
 {
-  "instructions": "<请粘贴自定义提示词，例如 prompt/deepseek_prompt.txt 的内容>",
-  "review": {
-    "review_id": "<review_id from view_return_review_snapshot>",
-    "review_source": 2,
-    "review_en": "<review_en from view_return_review_snapshot>"
-  },
-  "tag_library": [
+{
+  "model": "deepseek-v3-250324",
+  "messages": [
     {
-      "tag_code": "STABILITY_TIP",
-      "tag_name_cn": "稳定性/防倾倒不足",
-      "category_name_cn": "结构与承载",
-      "definition": "使用中出现下弯、晃动、防滑失效等影响安全的问题。",
-      "boundary_note": "若尺寸根本不适配则归入尺寸/兼容性不符。"
+      "role": "system",
+      "content": {
+        "role": "return_analyst",
+        "instructions": {
+          "role": "你是一名亚马逊美国站的退货分析专家，负责解读用户留言并输出结构化结果。",
+          "task": "阅读 review 信息和 tag_library，根据标签定义与边界进行多标签打标。",
+          "requirements": [
+            "JSON 仅包含以下字段：review_id、review_source、review_en、review_cn、sentiment、tags。",
+            "review_source：0=return，1=voc，2=review。",
+            "sentiment：情感标签（-1=负面，0=中性，1=正面）。",
+            "tags 数组内每个对象包含 tag_code、tag_name_cn、evidence。",
+            "tag_code 必须来自 tag_library；若无法匹配则 tags 为空数组。",
+            "evidence 为英文原文中触发标签的句子/短语。",
+            "严禁输出多余字段或解释性文本。"
+          ]
+        },
+        "tag_library": [
+          {
+            "tag_code": "STABILITY_TIP",
+            "tag_name_cn": "稳定性/防倾倒不足",
+            "category_name_cn": "结构与承载",
+            "definition": "使用中出现下弯、晃动、防滑失效等影响安全的问题。",
+            "boundary_note": "若尺寸根本不适配则归入尺寸/兼容性不符。"
+          },
+          {
+            "tag_code": "PARTS_DESIGN",
+            "tag_name_cn": "分区/配件设计不合理",
+            "category_name_cn": "结构与承载",
+            "definition": "配件过高/过窄/缺止倾设计导致难以稳固或压缩有效容量。",
+            "boundary_note": "若整体晃动则优先归属稳定性/防倾倒不足。"
+          },
+          {
+            "tag_code": "<更多标签...>",
+            "tag_name_cn": "<标签中文名>",
+            "category_name_cn": "<一级类目>",
+            "definition": "<标签定义>",
+            "boundary_note": "<与相近标签的边界说明>"
+          }
+        ]
+      }
     },
     {
-      "tag_code": "PARTS_DESIGN",
-      "tag_name_cn": "分区/配件设计不合理",
-      "category_name_cn": "结构与承载",
-      "definition": "配件过高/过窄/缺止倾设计导致难以稳固或压缩有效容量。",
-      "boundary_note": "若整体晃动则优先归属稳定性/防倾倒不足。"
-    },
-    {
-      "tag_code": "<更多标签...>",
-      "tag_name_cn": "<标签中文名>",
-      "category_name_cn": "<一级类目>",
-      "definition": "<标签定义>",
-      "boundary_note": "<与相近标签的边界说明>"
+      "role": "user",
+      "content": {
+        "review_id": "<review_id from view_return_review_snapshot>",
+        "review_source": 2,
+        "review_en": "<review_en from view_return_review_snapshot>"
+      }
     }
-  ]
+  ],
+  "response_format": {
+    "type": "json_object"
+  }
 }

@@ -65,6 +65,7 @@ scripts/
   - `--limit N`
   - 可选 `--candidate-output/--candidate-input/--payload-output/--payload-input`
   - `--prompt-file`（DeepSeek 调用时附带的自定义提示词，默认读取 `prompt/deepseek_prompt.txt`）
+  - `--llm-request-output`（可选 JSONL，记录发送给 DeepSeek 的请求体，便于排查）
 - **输出**：
   - `candidates` 步：输出候选日志 + 可选 JSONL 文件。
   - `llm` 步：写入 `return_fact_llm`，可选输出 payload JSONL。

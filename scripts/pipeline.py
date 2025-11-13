@@ -75,9 +75,10 @@ def run_step(
     payload_output: Path | None,
     payload_input: Path | None,
     prompt_text: str | None,
+    llm_request_output: Path | None,
 ) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    cfg = load_config(config_path)
+    cfg = load_config(config_path, tag_filter_path="config/tag_filters.yaml")
     doris = DorisClient(cfg.doris)
     deepseek = DeepSeekClient(cfg.deepseek)
 
@@ -99,13 +100,20 @@ def run_step(
                 logging.info("Saved candidates to %s", candidate_output)
 
         elif step == "llm":
-            tag_library = doris.fetch_dim_tag_map()
+            tag_library = doris.fetch_dim_tag_map(filters=[f.__dict__ for f in cfg.tag_filters])
             if candidate_input:
                 candidates = _read_candidates_from_jsonl(candidate_input)
                 logging.info("Loaded %d candidates from %s", len(candidates), candidate_input)
             else:
                 candidates = step_fetch_candidates(doris, limit)
-            payloads = step_call_llm(candidates, deepseek, doris, tag_library, prompt_text)
+            payloads = step_call_llm(
+                candidates,
+                deepseek,
+                doris,
+                tag_library,
+                prompt_text,
+                request_log_path=llm_request_output,
+            )
             if payload_output:
                 _write_jsonl(
                     payload_output,
@@ -123,8 +131,15 @@ def run_step(
 
         elif step == "all":
             candidates = step_fetch_candidates(doris, limit)
-            tag_library = doris.fetch_dim_tag_map()
-            payloads = step_call_llm(candidates, deepseek, doris, tag_library, prompt_text)
+            tag_library = doris.fetch_dim_tag_map(filters=[f.__dict__ for f in cfg.tag_filters])
+            payloads = step_call_llm(
+                candidates,
+                deepseek,
+                doris,
+                tag_library,
+                prompt_text,
+                request_log_path=llm_request_output,
+            )
             step_parse_payloads(doris, payloads=payloads)
 
         else:
@@ -174,6 +189,11 @@ def parse_args() -> argparse.Namespace:
         default=Path("prompt/deepseek_prompt.txt"),
         help="Text file containing custom instructions for DeepSeek (default: prompt/deepseek_prompt.txt).",
     )
+    parser.add_argument(
+        "--llm-request-output",
+        type=Path,
+        help="Optional JSONL file to log request bodies sent to DeepSeek.",
+    )
     return parser.parse_args()
 
 
@@ -191,4 +211,5 @@ if __name__ == "__main__":
         payload_output=args.payload_output,
         payload_input=args.payload_input,
         prompt_text=prompt_text,
+        llm_request_output=args.llm_request_output,
     )

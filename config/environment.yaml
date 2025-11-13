@@ -1,4 +1,4 @@
-doris:
+﻿doris:
   host: 172.16.33.11
   port: 9030
   database: hyy

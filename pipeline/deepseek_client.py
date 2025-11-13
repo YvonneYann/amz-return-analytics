@@ -1,23 +1,17 @@
 from __future__ import annotations
 
 import json
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 
 import requests
 
 from .config import DeepSeekConfig
 from .models import CandidateReview, LLMPayload, TagFragment
 
-
-DEFAULT_SYSTEM_PROMPT = (
-    "You are an Amazon US marketplace return analyst. "
-    "Always respond with valid JSON that matches the specified schema."
-)
-
 DEFAULT_INSTRUCTIONS = (
-    "阅读 review_en（英文原文）与下面的标签库（tag_library），"
-    "按 README 规范输出 JSON：review_id, review_source, review_en, review_cn, "
-    "sentiment (-1/0/1), tags[{tag_code, tag_name_cn, evidence}]。"
+    "你是一名亚马逊美国站的退货分析专家，请严格按照 schema 输出 JSON，字段为："
+    "review_id, review_source, review_en, review_cn, sentiment(-1/0/1), "
+    "tags[{tag_code, tag_name_cn, evidence}]。仅可使用 tag_library 中的标签。"
 )
 
 
@@ -34,6 +28,7 @@ class DeepSeekClient:
         review: CandidateReview,
         tag_library: Dict[str, Dict[str, str]],
         prompt_text: Optional[str] = None,
+        on_request: Optional[Callable[[Dict[str, object]], None]] = None,
     ) -> LLMPayload:
         url = f"{self._base_url}/chat/completions"
         headers = {
@@ -41,23 +36,26 @@ class DeepSeekClient:
             "Content-Type": "application/json",
         }
         instructions = prompt_text.strip() if prompt_text else DEFAULT_INSTRUCTIONS
-        user_payload = {
+        system_payload = {
+            "role": "return_analyst",
             "instructions": instructions,
-            "review": {
-                "review_id": review.review_id,
-                "review_source": review.review_source,
-                "review_en": review.review_en,
-            },
             "tag_library": _format_tag_library(tag_library),
+        }
+        user_payload = {
+            "review_id": review.review_id,
+            "review_source": review.review_source,
+            "review_en": review.review_en,
         }
         body: Dict[str, object] = {
             "model": self._model,
             "messages": [
-                {"role": "system", "content": DEFAULT_SYSTEM_PROMPT},
+                {"role": "system", "content": json.dumps(system_payload, ensure_ascii=False)},
                 {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
             ],
             "response_format": {"type": "json_object"},
         }
+        if on_request:
+            on_request(body)
         resp = requests.post(url, headers=headers, json=body, timeout=60)
         resp.raise_for_status()
         data = resp.json()

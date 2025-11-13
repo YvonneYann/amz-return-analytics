@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Dict, List
+from typing import Dict, List, Any
 
 import pymysql
 
@@ -137,20 +137,29 @@ class DorisClient:
     # ------------------------------------------------------------------
     # Dimension helpers
     # ------------------------------------------------------------------
-    def fetch_dim_tag_map(self) -> Dict[str, Dict[str, str]]:
+    def fetch_dim_tag_map(self, filters: List[Dict[str, Any]] | None = None) -> Dict[str, Dict[str, str]]:
         with self._conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT
-                    tag_code,
-                    tag_name_cn,
-                    category_name_cn,
-                    definition,
-                    boundary_note
-                FROM return_dim_tag
-                WHERE is_active = 1
-                """
-            )
+            sql = """
+            SELECT
+                tag_code,
+                tag_name_cn,
+                category_name_cn,
+                definition,
+                boundary_note
+            FROM return_dim_tag
+            WHERE is_active = 1
+            """
+            params = []
+            if filters:
+                for f in filters:
+                    field = f.get("field")
+                    operator = f.get("operator", "eq").lower()
+                    value = f.get("value")
+                    if operator != "eq":
+                        raise ValueError(f"Unsupported operator: {operator}")
+                    sql += f" AND {field} = %s"
+                    params.append(value)
+            cur.execute(sql, params)
             rows = cur.fetchall()
         return {row["tag_code"]: row for row in rows}
 
