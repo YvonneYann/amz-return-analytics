@@ -42,7 +42,7 @@
 ### 核心事实表映射关系
 
 - `view_return_review_snapshot`（候选留言视图）：输出 `review_id`、`review_en`、`review_source`，为 LLM 提供文本输入；`review_id` 在后续所有表中保持一致。
-- `return_fact_llm`（Raw 层/LLM Output）：以 `review_id` 唯一标识，`payload` 保存完整 JSON，标签编码 `payload.tags[].tc` 必须与 `return_dim_tag.tag_code` 对齐。
+- `return_fact_llm`（Raw 层/LLM Output）：以 `review_id` 唯一标识，`payload` 保存完整 JSON，标签编码 `payload.tags[].tag_code` 必须与 `return_dim_tag.tag_code` 对齐。
 - `return_fact_details`（结构化事实表）：记录 `review_id`、`tag_code`、`review_en`、`review_cn`、`sentiment`、`evidence` 等字段，来源于 `return_fact_llm.payload` 展开，每条标签一行，并引用 `return_dim_tag`。
 - `return_dim_tag`（标签维表）：存放 `tag_code`、`tag_name_cn`、`category_name_cn`、`definition`、`boundary_note` 等元数据，为 `return_fact_details` 提供类目和定义说明。
 
