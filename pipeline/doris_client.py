@@ -49,13 +49,15 @@ class DorisClient:
     # Raw payload stage
     # ------------------------------------------------------------------
     def upsert_return_fact_llm(self, payload: LLMPayload) -> None:
-        sql = """
-        REPLACE INTO return_fact_llm (review_id, payload)
+        delete_sql = "DELETE FROM return_fact_llm WHERE review_id = %s"
+        insert_sql = """
+        INSERT INTO return_fact_llm (review_id, payload)
         VALUES (%s, %s)
         """
+        json_payload = payload.to_json()
         with self._conn.cursor() as cur:
-            json_payload = payload.to_json()
-            cur.execute(sql, (payload.review_id, json_payload))
+            cur.execute(delete_sql, (payload.review_id,))
+            cur.execute(insert_sql, (payload.review_id, json_payload))
 
     def fetch_payloads(self, limit: int = 200) -> List[LLMPayload]:
         sql = """
@@ -108,14 +110,6 @@ class DorisClient:
             evidence
         )
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-        ON DUPLICATE KEY UPDATE
-            review_source = VALUES(review_source),
-            review_en = VALUES(review_en),
-            review_cn = VALUES(review_cn),
-            sentiment = VALUES(sentiment),
-            tag_name_cn = VALUES(tag_name_cn),
-            evidence = VALUES(evidence),
-            updated_at = NOW()
         """
         rows = [
             (
@@ -131,6 +125,8 @@ class DorisClient:
             for tag in payload.tags
         ]
         with self._conn.cursor() as cur:
+            # Remove existing tags for this review_id to simulate upsert behavior.
+            cur.execute("DELETE FROM return_fact_details WHERE review_id = %s", (payload.review_id,))
             cur.executemany(sql, rows)
 
     # ------------------------------------------------------------------
