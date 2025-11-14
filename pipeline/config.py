@@ -28,6 +28,7 @@ class TagFilter:
     field: str
     operator: str
     value: Any
+    condition_name: str | None = None
 
 
 @dataclass
