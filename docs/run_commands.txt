@@ -9,6 +9,9 @@ py -3 -m venv .venv
 # === 安装依赖 ===
 pip install -r requirements.txt
 
+# === 连通性测试（最小调用） ===
+python test/check_deepseek.py
+
 # === 步骤一：采样候选 ===
 python -m scripts.pipeline --step candidates --limit 10 --candidate-output test/candidates.jsonl
 
@@ -23,6 +26,3 @@ python -m scripts.pipeline --step raw --payload-input test/payloads.jsonl
 
 # === 步骤四：解析 payload 并写入 return_fact_details ===
 python -m scripts.pipeline --step parse --payload-input test/payloads.jsonl
-
-# === 连通性测试（最小调用） ===
-python test/check_deepseek.py
