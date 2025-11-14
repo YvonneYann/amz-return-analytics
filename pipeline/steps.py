@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import logging
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
-from .doris_client import DorisClient
 from .deepseek_client import DeepSeekClient
+from .doris_client import DorisClient
 from .models import CandidateReview, LLMPayload
 
 
@@ -23,6 +23,7 @@ def step_call_llm(
     tag_library: Dict[str, Dict[str, str]],
     prompt_text: Optional[str],
     request_log_path: Optional[Path] = None,
+    write_to_db: bool = True,
 ) -> List[LLMPayload]:
     if not tag_library:
         raise ValueError("tag_library is empty; fetch return_dim_tag before calling LLM.")
@@ -40,9 +41,12 @@ def step_call_llm(
 
     for review in candidates:
         payload = deepseek.annotate(review, tag_library, prompt_text, on_request=_logger)
-        doris.upsert_return_fact_llm(payload)
+        if write_to_db:
+            doris.upsert_return_fact_llm(payload)
         payloads.append(payload)
-    logging.info("Stored %d payloads into return_fact_llm", len(payloads))
+
+    if write_to_db:
+        logging.info("Stored %d payloads into return_fact_llm", len(payloads))
     if log_fp:
         log_fp.close()
     return payloads
@@ -61,3 +65,13 @@ def step_parse_payloads(
         doris.insert_return_fact_details(payload)
         count += 1
     logging.info("Inserted/updated %d rows into return_fact_details", count)
+
+
+def step_write_raw_from_cache(
+    doris: DorisClient, payloads: Iterable[LLMPayload]
+) -> None:
+    count = 0
+    for payload in payloads:
+        doris.upsert_return_fact_llm(payload)
+        count += 1
+    logging.info("Upserted %d payloads into return_fact_llm from cache", count)

@@ -19,7 +19,12 @@ from pipeline.config import load_config
 from pipeline.deepseek_client import DeepSeekClient
 from pipeline.doris_client import DorisClient
 from pipeline.models import CandidateReview, LLMPayload, TagFragment
-from pipeline.steps import step_call_llm, step_fetch_candidates, step_parse_payloads
+from pipeline.steps import (
+    step_call_llm,
+    step_fetch_candidates,
+    step_parse_payloads,
+    step_write_raw_from_cache,
+)
 
 
 def _write_jsonl(path: Path, records: Iterable[dict]) -> None:
@@ -76,6 +81,7 @@ def run_step(
     payload_input: Path | None,
     prompt_text: str | None,
     llm_request_output: Path | None,
+    skip_db_write: bool,
 ) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config(config_path, tag_filter_path="config/tag_filters.yaml")
@@ -113,6 +119,7 @@ def run_step(
                 tag_library,
                 prompt_text,
                 request_log_path=llm_request_output,
+                write_to_db=not skip_db_write,
             )
             if payload_output:
                 _write_jsonl(
@@ -128,6 +135,13 @@ def run_step(
                 step_parse_payloads(doris, payloads=payloads)
             else:
                 step_parse_payloads(doris, payloads=None, limit_from_db=limit)
+
+        elif step == "raw":
+            if not payload_input:
+                raise ValueError("--payload-input is required for --step raw")
+            payloads = _read_payloads_from_jsonl(payload_input)
+            logging.info("Loaded %d payloads from %s", len(payloads), payload_input)
+            step_write_raw_from_cache(doris, payloads)
 
         elif step == "all":
             candidates = step_fetch_candidates(doris, limit)
@@ -158,7 +172,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--step",
-        choices=["candidates", "llm", "parse", "all"],
+        choices=["candidates", "llm", "parse", "raw", "all"],
         required=True,
         help="Which step to run.",
     )
@@ -194,6 +208,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Optional JSONL file to log request bodies sent to DeepSeek.",
     )
+    parser.add_argument(
+        "--skip-db-write",
+        action="store_true",
+        help="When running --step llm, avoid writing payloads into Doris (only emit JSONL).",
+    )
     return parser.parse_args()
 
 
@@ -212,4 +231,5 @@ if __name__ == "__main__":
         payload_input=args.payload_input,
         prompt_text=prompt_text,
         llm_request_output=args.llm_request_output,
+        skip_db_write=args.skip_db_write,
     )

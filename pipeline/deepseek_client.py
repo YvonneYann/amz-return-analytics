@@ -58,9 +58,11 @@ class DeepSeekClient:
         if on_request:
             on_request(body)
         resp = requests.post(url, headers=headers, json=body, timeout=self._timeout)
+        print("DeepSeek status:", resp.status_code)
+        print("DeepSeek body preview:", resp.text[:500])
         resp.raise_for_status()
         data = resp.json()
-        content = data["choices"][0]["message"]["content"]
+        content = _strip_json_fence(data["choices"][0]["message"]["content"])
         payload_dict = json.loads(content)
         tags = [
             TagFragment(
@@ -78,6 +80,20 @@ class DeepSeekClient:
             sentiment=payload_dict.get("sentiment", 0),
             tags=tags,
         )
+
+
+def _strip_json_fence(text: str) -> str:
+    """Remove ```json ... ``` fences if present."""
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        lines = stripped.splitlines()
+        # Drop first line (```json) and last line (```) if present
+        if lines:
+            lines = lines[1:]
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]
+        stripped = "\n".join(lines).strip()
+    return stripped
 
 
 def _format_tag_library(tag_library: Dict[str, Dict[str, str]]) -> List[Dict[str, str]]:

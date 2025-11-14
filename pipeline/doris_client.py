@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 import pymysql
 
@@ -50,13 +50,12 @@ class DorisClient:
     # ------------------------------------------------------------------
     def upsert_return_fact_llm(self, payload: LLMPayload) -> None:
         sql = """
-        INSERT INTO return_fact_llm (review_id, payload)
+        REPLACE INTO return_fact_llm (review_id, payload)
         VALUES (%s, %s)
-        ON DUPLICATE KEY UPDATE payload = VALUES(payload),
-                                created_at = NOW()
         """
         with self._conn.cursor() as cur:
-            cur.execute(sql, (payload.review_id, payload.to_json()))
+            json_payload = payload.to_json()
+            cur.execute(sql, (payload.review_id, json_payload))
 
     def fetch_payloads(self, limit: int = 200) -> List[LLMPayload]:
         sql = """
@@ -137,7 +136,9 @@ class DorisClient:
     # ------------------------------------------------------------------
     # Dimension helpers
     # ------------------------------------------------------------------
-    def fetch_dim_tag_map(self, filters: List[Dict[str, Any]] | None = None) -> Dict[str, Dict[str, str]]:
+    def fetch_dim_tag_map(
+        self, filters: List[Dict[str, Any]] | None = None
+    ) -> Dict[str, Dict[str, str]]:
         with self._conn.cursor() as cur:
             sql = """
             SELECT

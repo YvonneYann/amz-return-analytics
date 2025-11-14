@@ -1,102 +1,97 @@
-# 脚本与流程节点说明
+# 脚本与流程说明
 
-本文描述当前仓库中与数据管道相关的脚本/模块，说明它们归属的流程节点，以及各自的输入/输出形式，方便按需独立运行或调试。
+本文概述仓库中与流水线相关的脚本/模块，说明它们的职责以及常见组合方式，方便在本地或服务器上逐步调试。
 
-## 目录结构概览
+## 目录结构
 
 ```
 pipeline/
-  config.py
-  doris_client.py
-  deepseek_client.py
-  models.py
-  steps.py
+  config.py            # 读取环境、标签筛选配置
+  doris_client.py      # Doris 读写封装
+  deepseek_client.py   # DeepSeek API 封装
+  models.py            # 数据模型（CandidateReview、LLMPayload 等）
+  steps.py             # 单个流程节点的复用逻辑
 scripts/
-  pipeline.py
+  pipeline.py          # CLI 入口，组合以上步骤
 ```
 
-## 模块明细
+## 模块职责
 
-### `pipeline/config.py`（公共配置模块）
-- **流程节点**：全链路通用。
-- **用途**：读取 `config/environment.yaml`，解析 Doris 与 DeepSeek 的连接参数。
-- **输入**：YAML 配置文件路径。
-- **输出**：`AppConfig` 数据类实例（包含 `DorisConfig`、`DeepSeekConfig`）。
+### `pipeline/config.py`
+- **作用**：读取 `config/environment.yaml`（Doris/DeepSeek 连接信息）及 `config/tag_filters.yaml`（标签筛选条件），返回统一的 `AppConfig`。
 
-### `pipeline/models.py`（数据模型定义）
-- **流程节点**：全链路通用。
-- **用途**：定义 `CandidateReview`、`TagFragment`、`LLMPayload`、`FactDetailRow` 等数据结构；负责 LLM payload 的 JSON 序列化。
-- **输入**：无（模块级定义）。
-- **输出**：供其他模块引用的数据类。
+### `pipeline/models.py`
+- **作用**：定义 `CandidateReview`、`LLMPayload`、`TagFragment` 等数据类，并提供 `LLMPayload.to_json()` 等序列化方法，便于读写 JSON/数据库。
 
-### `pipeline/doris_client.py`（Doris 访问层）
-- **流程节点**：
-  1. 候选采样（`view_return_review_snapshot`）。
-  2. Raw 存储（`return_fact_llm`）。
-  3. 解析写入（`return_fact_details`）。
-  4. 维度查询（`return_dim_tag`）。
-- **用途**：封装 Doris/MySQL 协议的 CRUD 操作，含 `fetch_candidates`、`upsert_return_fact_llm`、`fetch_payloads`、`insert_return_fact_details`、`fetch_dim_tag_map`。
-- **输入**：`DorisConfig`；各函数的参数（limit、payload 等）。
-- **输出**：候选列表、payload 列表或写入返回值（无显式返回）。
+### `pipeline/doris_client.py`
+- **作用**：通过 MySQL 协议连接 Doris，提供：
+  1. `fetch_candidates`：读取 `view_return_review_snapshot`
+  2. `upsert_return_fact_llm`：写入 `return_fact_llm`（使用 `REPLACE INTO` 保证幂等）
+  3. `fetch_payloads`：从 Raw 表取 payload 供解析
+  4. `insert_return_fact_details`：写入 `return_fact_details`
+  5. `fetch_dim_tag_map`：按筛选条件读取标签维表
 
-### `pipeline/deepseek_client.py`（LLM 调用层）
-- **流程节点**：DeepSeek 打标阶段。
-- **用途**：按 README 规范调用 DeepSeek Chat Completions API。支持同时注入：
-  - `CandidateReview`（来自 `view_return_review_snapshot`）
-  - 标签维表（`return_dim_tag` 查询结果）
-  - 自定义提示词（由 CLI `--prompt-file` 读取，若未提供则使用内置默认说明）
-- **输入**：`CandidateReview`、标签字典、可选提示词。
-- **输出**：`LLMPayload`（含 `tags[]`）。
+### `pipeline/deepseek_client.py`
+- **作用**：封装 DeepSeek Chat Completions 调用，自动注入角色/任务/标签库等提示词，并处理 LLM 返回的 ```json fenced code```，最终产出 `LLMPayload`。
 
-### `pipeline/steps.py`（单节点执行逻辑）
-- **流程节点**：
-  1. `step_fetch_candidates` → 候选视图。
-  2. `step_call_llm` → DeepSeek 打标 + 写入 `return_fact_llm`。
-  3. `step_parse_payloads` → 解析 payload → 写入 `return_fact_details`。
-- **输入**：`DorisClient`、`DeepSeekClient`、可选 JSONL/内存对象。
-- **输出**：列表（候选/ payload），或直接写 DB（解析步骤）。
+### `pipeline/steps.py`
+- **作用**：将常见节点抽象为函数，便于脚本组合：
+  - `step_fetch_candidates`
+  - `step_call_llm`（支持记录请求、控制是否写 Raw）
+  - `step_parse_payloads`
+  - `step_write_raw_from_cache`（将本地缓存批量写入 `return_fact_llm`）
 
-### `scripts/pipeline.py`（命令行入口）
-- **流程节点**：支持单节点或整链执行。
-- **用途**：CLI 工具，通过 `--step` 切换执行阶段，并可用 JSONL 文件串联输入/输出，便于逐步调试。
-- **输入**：
-  - `--step {candidates,llm,parse,all}`
+### `scripts/pipeline.py`
+- **作用**：命令行入口，可按步骤执行或一次跑完。主要参数：
+  - `--step {candidates,llm,parse,raw,all}`
   - `--config config/environment.yaml`
   - `--limit N`
-  - 可选 `--candidate-output/--candidate-input/--payload-output/--payload-input`
-  - `--prompt-file`（DeepSeek 调用时附带的自定义提示词，默认读取 `prompt/deepseek_prompt.txt`）
-  - `--llm-request-output`（可选 JSONL，记录发送给 DeepSeek 的请求体，便于排查）
-- **输出**：
-  - `candidates` 步：输出候选日志 + 可选 JSONL 文件。
-  - `llm` 步：写入 `return_fact_llm`，可选输出 payload JSONL。
-  - `parse` 步：写入 `return_fact_details`。
-  - `all` 步：串联以上三步，不生成额外文件。
+  - `--candidate-output/--candidate-input`
+  - `--payload-output/--payload-input`
+  - `--prompt-file`（默认 `prompt/deepseek_prompt.txt`）
+  - `--llm-request-output`（记录请求 JSONL）
+  - `--skip-db-write`（仅在 `--step llm` 生效；只缓存 JSON，不写 Doris）
 
-## 典型运行姿势
+## 典型执行顺序
 
-1. **仅采样候选**  
+1. **采样候选**
    ```bash
-   python scripts/pipeline.py --step candidates --limit 100 \
-       --candidate-output data/candidates.jsonl
+   python scripts/pipeline.py --step candidates --limit 100 --candidate-output data/candidates.jsonl
    ```
-2. **离线调用 LLM（读取 JSONL）**  
+
+2. **调用 LLM，同时写入 Raw 表**
    ```bash
    python scripts/pipeline.py --step llm \
        --candidate-input data/candidates.jsonl \
-       --payload-output data/payloads.jsonl
+       --payload-output data/payloads.jsonl \
+       --llm-request-output data/llm_requests.jsonl
    ```
-3. **解析 payload 并写入 Doris**  
+
+3. **调用 LLM 但只缓存 JSON（不写 Doris，节省 token）**
    ```bash
-   python scripts/pipeline.py --step parse \
-       --payload-input data/payloads.jsonl
+   python scripts/pipeline.py --step llm \
+       --candidate-input data/candidates.jsonl \
+       --payload-output data/payloads.jsonl \
+       --llm-request-output data/llm_requests.jsonl \
+       --skip-db-write
    ```
-4. **一次跑完**  
+
+4. **将缓存写回 `return_fact_llm`**
+   ```bash
+   python scripts/pipeline.py --step raw --payload-input data/payloads.jsonl
+   ```
+
+5. **解析 payload 写入 `return_fact_details`**
+   ```bash
+   python scripts/pipeline.py --step parse --payload-input data/payloads.jsonl
+   ```
+
+6. **一次跑完**
    ```bash
    python scripts/pipeline.py --step all --limit 200
    ```
 
-> 额外参考：
-> - 调用 DeepSeek 的用户 payload JSON 格式，见 `docs/llm_request_template.json`。
-> - 默认提示词位于 `prompt/deepseek_prompt.txt`，可直接修改该文件而无需改动代码。
-
-通过上述拆分，可以按节点检查输入/输出数据，也方便在中断或调试时复用已有中间结果。
+> **提示**  
+> - DeepSeek 请求体模板见 `docs/llm_request_template.json`，可搭配 `prompt/deepseek_prompt.txt` 定制输出。  
+> - 所有日志与缓存建议放在 `test/` 或 `data/` 目录，方便复现和回放。  
+> - 运行前请确保 `.venv` 虚拟环境已激活，并在 `config/environment.yaml` 中配置正确的 Doris/DeepSeek 凭据。
