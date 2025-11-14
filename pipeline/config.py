@@ -21,6 +21,7 @@ class DeepSeekConfig:
     base_url: str
     api_key: str
     model: str
+    timeout: int = 30
 
 
 @dataclass

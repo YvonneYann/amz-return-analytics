@@ -71,6 +71,7 @@
 - 约束：无值字段不返回、证据只保留触发表述，Stream Load 开启 gzip；服务端做 JSON Schema 校验以兜底格式错误。
 - 幂等：`INSERT ... ON DUPLICATE KEY UPDATE payload = VALUES(payload)`，结合 `enable_unique_key_merge_on_write=true` 避免重复。
 - 参考资料：调用 DeepSeek 时传入的 JSON 模板示例见 `docs/llm_request_template.json`；默认提示词可直接编辑 `prompt/deepseek_prompt.txt`，脚本会自动加载。如需记录请求体，可在 CLI 中使用 `--llm-request-output` 输出 JSONL。
+- DeepSeek API 的连接配置（base_url、model、api_key、timeout）集中在 `config/environment.yaml`，其中 `timeout` 会透传到 HTTP 请求的 `timeout` 参数，可按需调整。
 
 ## 打标与运营使用建议
 

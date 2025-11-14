@@ -22,6 +22,7 @@ class DeepSeekClient:
         self._base_url = config.base_url.rstrip("/")
         self._api_key = config.api_key
         self._model = config.model
+        self._timeout = config.timeout
 
     def annotate(
         self,
@@ -56,7 +57,7 @@ class DeepSeekClient:
         }
         if on_request:
             on_request(body)
-        resp = requests.post(url, headers=headers, json=body, timeout=60)
+        resp = requests.post(url, headers=headers, json=body, timeout=self._timeout)
         resp.raise_for_status()
         data = resp.json()
         content = data["choices"][0]["message"]["content"]
