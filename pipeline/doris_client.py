@@ -96,8 +96,6 @@ class DorisClient:
     # Fact details stage
     # ------------------------------------------------------------------
     def insert_return_fact_details(self, payload: LLMPayload) -> None:
-        if not payload.tags:
-            return
         sql = """
         INSERT INTO return_fact_details (
             review_id,
@@ -111,19 +109,35 @@ class DorisClient:
         )
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
         """
-        rows = [
-            (
-                payload.review_id,
-                tag.tag_code,
-                payload.review_source,
-                payload.review_en,
-                payload.review_cn,
-                payload.sentiment,
-                tag.tag_name_cn,
-                tag.evidence,
+        rows = []
+        if payload.tags:
+            rows = [
+                (
+                    payload.review_id,
+                    tag.tag_code,
+                    payload.review_source,
+                    payload.review_en,
+                    payload.review_cn,
+                    payload.sentiment,
+                    tag.tag_name_cn,
+                    tag.evidence,
+                )
+                for tag in payload.tags
+            ]
+        else:
+            # 无标签时也保留一行记录，tag_code 置为占位符，便于追踪空结果。
+            rows.append(
+                (
+                    payload.review_id,
+                    "NO_TAG",
+                    payload.review_source,
+                    payload.review_en,
+                    payload.review_cn,
+                    payload.sentiment,
+                    "",
+                    "",
+                )
             )
-            for tag in payload.tags
-        ]
         with self._conn.cursor() as cur:
             # Remove existing tags for this review_id to simulate upsert behavior.
             cur.execute("DELETE FROM return_fact_details WHERE review_id = %s", (payload.review_id,))
