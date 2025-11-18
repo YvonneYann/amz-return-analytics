@@ -18,6 +18,8 @@ select * from raw
 where 
 -- review_id in (select review_id from hyy.return_fact_llm where payload like '%"review_cn":""%' or payload like '%"tags":[]%')
 -- and review_source = 0
+-- review_id = '111-7011018-4913811'
+
 review_id not in (select review_id from hyy.return_fact_llm where payload not like '%"review_cn":""%' and payload not like '%"tags":[]%')
 and date_format(review_date,'%Y%m%d') >= 20250101
 and country = 'US' and fasin = 'B0BGHGXYJX'
