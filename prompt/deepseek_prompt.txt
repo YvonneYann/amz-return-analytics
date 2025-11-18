@@ -12,12 +12,12 @@
    - review_id：字符串，对应留言 ID
    - review_source：数字，留言来源（0=return，1=voc，2=review）
    - review_en：英文留言原文
-   - review_cn：中文翻译，若无法翻译可返回空字符串
+   - review_cn：中文翻译
    - sentiment：情感标签（-1=负面，0=中性，1=正面）
    - tags：数组。每个元素包含：
        * tag_code：标签编码
        * tag_name_cn：标签中文名
        * evidence：英文原文中触发该标签的句子/短语
-2. tag_code，tag_name_cn 都只能来自下方的 tag_library，若找不到匹配标签则返回空数组。
+2. tag_code，tag_name_cn 都只能来自下方的 tag_library。
 3. evidence 需为英文原文中触发该标签的简短片段。
 4. 禁止返回多余字段或解释性文本，严格遵循 JSON Schema。
