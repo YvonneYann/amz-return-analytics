@@ -21,12 +21,12 @@
 
 ### 视图/表
 
-- `view_return_review_snapshot`（候选视图）：从 MySQL `jj_review` 过滤出美国站低星评论，输出 `review_id`、`review_en`、`review_source=2` 等字段，作为 LLM 输入。
+- `view_return_review_snapshot`（候选视图）：从 MySQL `jj_review` 和 `jj_return_orders` 过滤出低星评论和退货留言，输出 `review_id`、`review_en`、`review_source=2` 等字段，作为 LLM 输入。
 - `return_fact_llm`（Raw 表）：存放 DeepSeek 返回的 JSON 字符串，主键 `review_id`，`payload` 内含原文、翻译、情感、标签数组、证据。
 - `return_fact_details`（结构化事实）：解析 Raw 后按标签展开，每行包含 `review_id`、`tag_code`、`review_source`、`review_en`/`review_cn`、`sentiment`、`tag_name_cn`、`evidence` 等。
 - `return_dim_tag`（标签维表）：存放 `tag_code`、`tag_name_cn`、`category`、`definition`、`boundary_note`、`version`、生效区间、启用状态等。
 
-### 核心事实表映射关系
+### 映射关系
 
 - `view_return_review_snapshot` → 生成候选文本，`review_id` 贯穿全链路。
 - `return_fact_llm` → 缓存 LLM 原始 JSON（Raw 层），字段 `payload` 保存完整结构。
