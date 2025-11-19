@@ -37,7 +37,7 @@
 
 链路概览：`view_return_review_snapshot` 提供原始文本 → DeepSeek 打标并写入 `return_fact_llm` → ETL 展开写入 `return_fact_details` → 与 `return_dim_tag` 衔接维度，形成“候选抽取 → 模型标注 → 原始入仓 → 结构化解析”闭环。
 
-1. **候选抽取**：从 `view_return_review_snapshot` 拉取差评文本，携带 `review_id`、`review_source`、`review_en`。
+1. **候选抽取**：从 `view_return_review_snapshot` 拉取差评&退货留言，携带 `review_id`、`review_source`、`review_en`。
 2. **模型标注&原始入仓**：DeepSeek 输出 JSON，脚本可选择直接写入 `return_fact_llm`，或先缓存 `payloads.jsonl`（`--skip-db-write`）。
 3. **结构化解析**：Python 解析 `payload`，将每个标签拆为独立行写入 `return_fact_details`；若 `tags` 为空会写入占位记录（`tag_code="NO_TAG"`）。
 
