@@ -1,52 +1,45 @@
 # 亚马逊退货标签与数据方案
 
-> 完整聊天记录位于 `prompt/`（原始 PDF 与抽取文本）。本 README 仅保留关键结论，便于快速对齐目标与实现路径。
+> 完整聊天记录保存在 `chat/` 目录；此 README 聚焦关键结论，便于快速对齐目标与实现路径。
 
 ## 项目目标
 
-- 以 iSPECLE 可伸缩水槽沥水架为样本，梳理美国买家关注点与典型退货话术。
-- 输出 **MECE 的退货标签库**，确保运营、产品、客服对“退货原因”有统一语言。
-- 设计 Doris/StarRocks 的落库方案，与 DeepSeek 等 LLM 打标结果对接。
+本项目旨在搭建一套可持续迭代的 MECE 退货标签库，确保运营、产品、客服在讨论“退货原因”时使用同一语言，并以内生的用户行为主线（看到页面 → 收货 → 使用 → 售后/退货）覆盖 5 个标签大类。同时，结合 Doris/StarRocks 与 DeepSeek LLM 打标流程构建“候选抽取 → 模型标注 → 原始入仓 → 结构化解析”的可追溯闭环，让每个标签都能回溯到原文及其定义/边界。
 
 ## 核心产出
 
-- **用户洞察**：16 个高频关注点（尺寸、场景、材质、防锈、承重、容量、安装、外观、价格、物流、社证等），并附真实留言示例，用于培训/质检。
-- **终版退货标签库（示例）**
-  - *适配与场景*：尺寸/兼容性不符、场景适配不足、变体/选型指引不清。
-  - *结构与承载*：稳定性/防倾倒不足、容量/有效面积不足、分区/配件设计不合理、自重过大/移动不便。
-  - *材质与外观*：材质/防锈失效、外观/颜色与实物不符、台面/器具保护不足、清洁/维护成本高。
-  - *信息与体验*：安装/调节/固定性差、规格参数与宣传不一致、页面信息缺失/误导、社会证明与体验不符。
-  - *价格与政策*：价格/促销不透明、价值/对比劣势、退换信息/政策体验不佳。
-  - *履约与服务*：物流时效异常、包装防护不足、损坏到货（DOA/受损）、品牌/店铺服务不达标。
-  - SOP：每条留言至少 1 个主标签，可叠加 1–2 个从标签，并支持“二级原因码”（如“刀叉篮过高”）。
-- **打标示例**：提供“留言翻译 + 舆情判断 + 标签/证据”模板，帮助新同学快速上手。
+- **退货标签库（示例）**
+  - *产品结构/适配体验*：衡量整体结构与场景适配，包括稳定性、容量/布局、分区配件设计以及尺寸/排水等与实际使用空间的契合度。
+  - *材质与外观*：关注材质耐久度与表面观感（防锈、防刮、涂层/气味/做工等），用于识别做工或保护力不足的问题。
+  - *安装与使用体验*：描述安装、组装及日常调节/固定的易用度，当操作繁琐或无法稳定使用时都会落入此类。
+  - *预期与价值感知*：聚焦于商品宣传信息与买家实际体验的落差，包括规格描述、页面信息以及价格/价值感受等失真。
+  - *履约与服务*：覆盖履约链路的体验，如物流及时性、包装防护、到货完整度以及客服/品牌在售后环节的响应。
+  - SOP：每条留言至少 1 个主标签，可叠加 1~2 个从标签；如需更细颗粒，可记录“二级原因码”（例：杯架缺挡杆）。
+- **打标示例**：提供“留言原文+翻译+情感+标签/证据”的标准模板，便于培训与质检。
 
 ## 数据建模与落库
 
-### 现有表/视图
+### 视图/表
 
-- `view_return_review_snapshot`（视图）：从 MySQL `jj_review` 过滤出美国站低星评论，输出 `review_id`、`review_en`、`review_source=2` 等字段，作为 LLM 打标的输入。
-- `return_fact_llm`：DeepSeek 等 LLM 的原始输出表。`review_id` 为主键，`payload` 保存极简 JSON（含原文、翻译、情感、标签数组、证据）。
-- `return_fact_details`：解析后的事实表，每条标签一行，字段包含 `review_id`、`tag_code`、`review_source`、`review_en`/`review_cn`、`sentiment`、`tag_name_cn`、`evidence` 等。
-- `return_dim_tag`：标签维表，记录 `tag_code`、中文名、一级类目、定义、边界、生效区间、版本及启用状态。
-
-### 入库与 ETL 流程
-
-1. **候选采样**：从 `view_return_review_snapshot` 取差评文本，携带 `review_id`、`review_source` 进入 LLM Prompt。
-2. **LLM 写入 Raw 层**：DeepSeek 产出极简 JSON，通过 Stream Load 插入 `return_fact_llm`，使用 `ON DUPLICATE KEY UPDATE` + Merge-on-Write 保证幂等。
-3. **解析落地**：
-   - Python(pymysql) 批量读取 `return_fact_llm.payload`。
-   - 将顶层字段写入 `return_fact_details`（每条标签拆成一行），并校验 `tag_code` 必须存在于 `return_dim_tag`。
-4. **质检**：通过 `SELECT review_id, json_length(payload->'$.tags')`、`SELECT review_id, tag_code, evidence` 等 SQL 监控条数与证据质量；必要时回查 `return_fact_llm` 获取原始 JSON。
+- `view_return_review_snapshot`（候选视图）：从 MySQL `jj_review` 过滤出美国站低星评论，输出 `review_id`、`review_en`、`review_source=2` 等字段，作为 LLM 输入。
+- `return_fact_llm`（Raw 表）：存放 DeepSeek 返回的 JSON 字符串，主键 `review_id`，`payload` 内含原文、翻译、情感、标签数组、证据。
+- `return_fact_details`（结构化事实）：解析 Raw 后按标签展开，每行包含 `review_id`、`tag_code`、`review_source`、`review_en`/`review_cn`、`sentiment`、`tag_name_cn`、`evidence` 等。
+- `return_dim_tag`（标签维表）：存放 `tag_code`、`tag_name_cn`、`category`、`definition`、`boundary_note`、`version`、生效区间、启用状态等。
 
 ### 核心事实表映射关系
 
-- `view_return_review_snapshot`（候选留言视图）：输出 `review_id`、`review_en`、`review_source`，为 LLM 提供文本输入；`review_id` 在后续所有表中保持一致。
-- `return_fact_llm`（Raw 层/LLM Output）：以 `review_id` 唯一标识，`payload` 保存完整 JSON，标签编码 `payload.tags[].tag_code` 必须与 `return_dim_tag.tag_code` 对齐。
-- `return_fact_details`（结构化事实表）：记录 `review_id`、`tag_code`、`review_en`、`review_cn`、`sentiment`、`evidence` 等字段，来源于 `return_fact_llm.payload` 展开，每条标签一行，并引用 `return_dim_tag`。
-- `return_dim_tag`（标签维表）：存放 `tag_code`、`tag_name_cn`、`category_name_cn`、`definition`、`boundary_note` 等元数据，为 `return_fact_details` 提供类目和定义说明。
+- `view_return_review_snapshot` → 生成候选文本，`review_id` 贯穿全链路。
+- `return_fact_llm` → 缓存 LLM 原始 JSON（Raw 层），字段 `payload` 保存完整结构。
+- `return_fact_details` → 将 Raw 展开为标签粒度的结构化记录。
+- `return_dim_tag` → 标签维度信息（定义、边界、一级类目、版本/生效期），供事实表关联。
 
-链路总结：`view_return_review_snapshot` 提供原始文本 → DeepSeek 打标并写入 `return_fact_llm` → ETL 展开写入 `return_fact_details` → 与 `return_dim_tag` 衔接维度信息，形成可追溯的“候选 → Raw → 结构化 → 维度”闭环。
+### 入库与 ETL 流程
+
+链路概览：`view_return_review_snapshot` 提供原始文本 → DeepSeek 打标并写入 `return_fact_llm` → ETL 展开写入 `return_fact_details` → 与 `return_dim_tag` 衔接维度，形成“候选抽取 → 模型标注 → 原始入仓 → 结构化解析”闭环。
+
+1. **候选抽取**：从 `view_return_review_snapshot` 拉取差评文本，携带 `review_id`、`review_source`、`review_en`。
+2. **模型标注&原始入仓**：DeepSeek 输出 JSON，脚本可选择直接写入 `return_fact_llm`，或先缓存 `payloads.jsonl`（`--skip-db-write`）。
+3. **结构化解析**：Python 解析 `payload`，将每个标签拆为独立行写入 `return_fact_details`；若 `tags` 为空会写入占位记录（`tag_code="NO_TAG"`）。
 
 ## LLM 输出规范
 
@@ -67,22 +60,8 @@
 }
 ```
 
-- 字段命名与数据库列保持一致：`review_*` 字段直接写入 `return_fact_details`，`tags[].tag_code`/`tag_name_cn`/`evidence` 对应 `tag_code`、`tag_name_cn`、`evidence` 列；如需主/从标签或置信度，可在后续版本扩展字段后同步更新解析脚本。
-- 约束：无值字段不返回、证据只保留触发表述，Stream Load 开启 gzip；服务端做 JSON Schema 校验以兜底格式错误。
-- 幂等：`INSERT ... ON DUPLICATE KEY UPDATE payload = VALUES(payload)`，结合 `enable_unique_key_merge_on_write=true` 避免重复。
-- 参考资料：调用 DeepSeek 时传入的 JSON 模板示例见 `docs/llm_request_template.json`；默认提示词可直接编辑 `prompt/deepseek_prompt.txt`，脚本会自动加载。如需记录请求体，可在 CLI 中使用 `--llm-request-output` 输出 JSONL。
-- DeepSeek API 的连接配置（base_url、model、api_key、timeout）集中在 `config/environment.yaml`，其中 `timeout` 会透传到 HTTP 请求的 `timeout` 参数，可按需调整。
-
-## 打标与运营使用建议
-
-- 严格套用标签定义与边界描述：先锁定主标签（最能解释退货诉求），再选择直接相关的从标签。
-- 若留言同时包含“功能缺陷 + 价值/价格抱怨”，优先记录功能性标签，再酌情追加“价值/对比劣势”。
-- 将“二级原因码”写入备注或衍生字段，便于洞察（例：`STABILITY_TIP` 下区分“杯架缺挡杆”“止滑垫移位”）。
-- 如需记录 ASIN、主从角色、置信度等，只需在 JSON 中新增字段，同时更新解析脚本；`return_fact_llm` 结构无需调整。
-
-## 目录提示
-
-- `prompt/chat.txt`：从 PDF 抽取的纯文本，便于全文搜索。
-- `prompt/` 其他文件：包含 PDF 原件、SQL、Prompt 草稿、ETL 代码片段。
-
-> 需要更多细节（完整对话、SQL 样例、Python 脚本）时，请直接查看 `prompt/` 目录。
+- 字段与数据库列保持一致：`review_*` 字段写入 `return_fact_details`，`tags[].tag_code/tag_name_cn/evidence` 映射至标签列。
+- 约束：`review_source` 取值 0=return、1=voc、2=review；`sentiment` 为 -1/0/1；若无标签则返回空数组。
+- 容错：脚本会去掉 ```json fenced code```，并记录 `resp.status_code/resp.text` 便于排查。
+- 请求示例与提示词：见 `docs/llm_request_template.json` 与 `prompt/deepseek_prompt.txt`。
+- DeepSeek/Doris 连接：统一配置在 `config/environment.yaml`。
