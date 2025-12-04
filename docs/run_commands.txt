@@ -14,6 +14,7 @@ python test/check_deepseek.py
 
 # === 步骤一：采样候选 ===
 python -m scripts.pipeline --step candidates --limit 10 --candidate-output test/candidates.jsonl
+python -m scripts.pipeline --step candidates --limit 10 --country US --fasin B0BGHGXYJX --candidate-output test/candidates.jsonl
 
 # === 步骤二：调用 DeepSeek 并写入 Doris ===
 python -m scripts.pipeline --step llm --candidate-input test/candidates.jsonl --payload-output test/payloads.jsonl --llm-request-output test/llm_requests.jsonl

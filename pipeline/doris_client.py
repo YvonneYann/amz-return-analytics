@@ -26,15 +26,28 @@ class DorisClient:
     # ------------------------------------------------------------------
     # Candidate stage
     # ------------------------------------------------------------------
-    def fetch_candidates(self, limit: int = 200) -> List[CandidateReview]:
+    def fetch_candidates(
+        self, limit: int = 200, country: str | None = None, fasin: str | None = None
+    ) -> List[CandidateReview]:
         sql = """
         SELECT review_id, review_source, review_en
         FROM view_return_review_snapshot
-        ORDER BY review_date DESC
-        LIMIT %s
         """
+        conditions = []
+        params = []
+        if country:
+            conditions.append("country = %s")
+            params.append(country)
+        if fasin:
+            conditions.append("fasin = %s")
+            params.append(fasin)
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
+        sql += " ORDER BY review_date DESC LIMIT %s"
+        params.append(limit)
+
         with self._conn.cursor() as cur:
-            cur.execute(sql, (limit,))
+            cur.execute(sql, params)
             rows = cur.fetchall()
         return [
             CandidateReview(

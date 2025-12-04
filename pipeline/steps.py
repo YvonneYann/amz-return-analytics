@@ -10,9 +10,16 @@ from .doris_client import DorisClient
 from .models import CandidateReview, LLMPayload
 
 
-def step_fetch_candidates(doris: DorisClient, limit: int) -> List[CandidateReview]:
-    candidates = doris.fetch_candidates(limit=limit)
-    logging.info("Fetched %d candidates from view_return_review_snapshot", len(candidates))
+def step_fetch_candidates(
+    doris: DorisClient, limit: int, country: str | None = None, fasin: str | None = None
+) -> List[CandidateReview]:
+    candidates = doris.fetch_candidates(limit=limit, country=country, fasin=fasin)
+    logging.info(
+        "Fetched %d candidates from view_return_review_snapshot (country=%s, fasin=%s)",
+        len(candidates),
+        country or "-",
+        fasin or "-",
+    )
     return candidates
 
 

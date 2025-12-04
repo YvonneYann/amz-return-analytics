@@ -75,6 +75,8 @@ def run_step(
     step: str,
     config_path: str,
     limit: int,
+    country: str | None,
+    fasin: str | None,
     candidate_output: Path | None,
     candidate_input: Path | None,
     payload_output: Path | None,
@@ -90,7 +92,7 @@ def run_step(
 
     try:
         if step == "candidates":
-            candidates = step_fetch_candidates(doris, limit)
+            candidates = step_fetch_candidates(doris, limit, country=country, fasin=fasin)
             if candidate_output:
                 _write_jsonl(
                     candidate_output,
@@ -111,7 +113,7 @@ def run_step(
                 candidates = _read_candidates_from_jsonl(candidate_input)
                 logging.info("Loaded %d candidates from %s", len(candidates), candidate_input)
             else:
-                candidates = step_fetch_candidates(doris, limit)
+                candidates = step_fetch_candidates(doris, limit, country=country, fasin=fasin)
             payloads = step_call_llm(
                 candidates,
                 deepseek,
@@ -144,7 +146,7 @@ def run_step(
             step_write_raw_from_cache(doris, payloads)
 
         elif step == "all":
-            candidates = step_fetch_candidates(doris, limit)
+            candidates = step_fetch_candidates(doris, limit, country=country, fasin=fasin)
             tag_library = doris.fetch_dim_tag_map(filters=[f.__dict__ for f in cfg.tag_filters])
             payloads = step_call_llm(
                 candidates,
@@ -177,6 +179,16 @@ def parse_args() -> argparse.Namespace:
         help="Which step to run.",
     )
     parser.add_argument("--limit", type=int, default=200, help="Max rows to process.")
+    parser.add_argument(
+        "--country",
+        type=str,
+        help="Optional country filter (matches view_return_review_snapshot.country).",
+    )
+    parser.add_argument(
+        "--fasin",
+        type=str,
+        help="Optional parent ASIN filter (matches view_return_review_snapshot.fasin).",
+    )
     parser.add_argument(
         "--candidate-output",
         type=Path,
@@ -225,6 +237,8 @@ if __name__ == "__main__":
         step=args.step,
         config_path=args.config,
         limit=args.limit,
+        country=args.country,
+        fasin=args.fasin,
         candidate_output=args.candidate_output,
         candidate_input=args.candidate_input,
         payload_output=args.payload_output,
