@@ -13,17 +13,17 @@ pip install -r requirements.txt
 python test/check_deepseek.py
 
 # === 步骤一：采样候选 ===
-python -m scripts.pipeline --step candidates --limit 10 --candidate-output test/candidates.jsonl
-python -m scripts.pipeline --step candidates --limit 10 --country US --fasin B0BGHGXYJX --candidate-output test/candidates.jsonl
+py -3 -m scripts.pipeline --step candidates --limit 10 --candidate-output test/candidates.jsonl
+py -3 -m scripts.pipeline --step candidates --limit 10 --country US --fasin B0BGHGXYJX --candidate-output test/candidates.jsonl
 
 # === 步骤二：调用 DeepSeek 并写入 Doris ===
-python -m scripts.pipeline --step llm --candidate-input test/candidates.jsonl --payload-output test/payloads.jsonl --llm-request-output test/llm_requests.jsonl
+py -3 -m scripts.pipeline --step llm --candidate-input test/candidates.jsonl --payload-output test/payloads.jsonl --llm-request-output test/llm_requests.jsonl
 
 # === 可选：只缓存 LLM 结果（不写 Doris，节省 token） ===
-python -m scripts.pipeline --step llm --candidate-input test/candidates.jsonl --payload-output test/payloads.jsonl --llm-request-output test/llm_requests.jsonl --skip-db-write
+py -3 -m scripts.pipeline --step llm --candidate-input test/candidates.jsonl --payload-output test/payloads.jsonl --llm-request-output test/llm_requests.jsonl --skip-db-write
 
 # === 步骤三：使用缓存的 payloads 回写 return_fact_llm ===
-python -m scripts.pipeline --step raw --payload-input test/payloads.jsonl
+py -3 -m scripts.pipeline --step raw --payload-input test/payloads.jsonl
 
 # === 步骤四：解析 payload 并写入 return_fact_details ===
-python -m scripts.pipeline --step parse --payload-input test/payloads.jsonl
+py -3 -m scripts.pipeline --step parse --payload-input test/payloads.jsonl
