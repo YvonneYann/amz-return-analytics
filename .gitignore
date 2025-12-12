@@ -1,3 +1,6 @@
 __pycache__/
 .venv/
+test/candidates.jsonl
+test/llm_requests.jsonl
+test/payloads.jsonl
 config/environment.yaml
