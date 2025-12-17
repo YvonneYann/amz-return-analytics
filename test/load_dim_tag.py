@@ -18,6 +18,7 @@ from pipeline.config import load_config
 def normalize_record(item: Dict[str, Any]) -> Dict[str, Any]:
     """Normalize a single tag record with safe defaults."""
     return {
+        "applicable_scope": item.get("applicable_scope") or item.get("scope"),
         "tag_code": item.get("tag_code") or item.get("code"),
         "tag_name_cn": item.get("tag_name_cn") or item.get("name_cn"),
         "category_code": item.get("category_code") or item.get("cat_code"),
@@ -43,7 +44,7 @@ def load_tags(json_path: Path) -> List[Dict[str, Any]]:
     if not isinstance(data, list):
         raise ValueError("Expected a list of tag objects in JSON.")
     records = [normalize_record(item) for item in data]
-    records = [r for r in records if r["tag_code"]]
+    records = [r for r in records if r["applicable_scope"] and r["tag_code"]]
     return records
 
 
@@ -59,9 +60,10 @@ def upsert_dim_tags(records: List[Dict[str, Any]]) -> None:
         autocommit=True,
         cursorclass=pymysql.cursors.DictCursor,
     )
-    delete_sql = "DELETE FROM return_dim_tag WHERE tag_code = %s"
+    delete_sql = "DELETE FROM return_dim_tag WHERE applicable_scope = %s AND tag_code = %s"
     insert_sql = """
     INSERT INTO return_dim_tag (
+        applicable_scope,
         tag_code,
         tag_name_cn,
         category_code,
@@ -73,15 +75,16 @@ def upsert_dim_tags(records: List[Dict[str, Any]]) -> None:
         version,
         effective_from,
         effective_to
-    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """
     try:
         with conn.cursor() as cur:
             for rec in records:
-                cur.execute(delete_sql, (rec["tag_code"],))
+                cur.execute(delete_sql, (rec["applicable_scope"], rec["tag_code"]))
                 cur.execute(
                     insert_sql,
                     (
+                        rec["applicable_scope"],
                         rec["tag_code"],
                         rec["tag_name_cn"],
                         rec["category_code"],
@@ -101,7 +104,7 @@ def upsert_dim_tags(records: List[Dict[str, Any]]) -> None:
 
 
 if __name__ == "__main__":
-    json_file = Path("chat/return_dim_tag_v2_20251117.json")
+    json_file = Path("chat/return_dim_tag_20251217.json")
     if not json_file.exists():
         raise SystemExit(f"File not found: {json_file}")
     records = load_tags(json_file)

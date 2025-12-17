@@ -12,6 +12,9 @@ pip install -r requirements.txt
 # === 连通性测试（最小调用） ===
 python test/check_deepseek.py
 
+# === 导入标签维表 ===
+py -3 test\load_dim_tag.py
+
 # === 步骤一：采样候选 ===
 py -3 -m scripts.pipeline --step candidates --limit 10 --candidate-output test/candidates.jsonl
 py -3 -m scripts.pipeline --step candidates --limit 10 --country US --fasin B0BGHGXYJX --candidate-output test/candidates.jsonl
