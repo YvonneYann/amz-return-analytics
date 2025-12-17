@@ -35,7 +35,7 @@ where
 review_id not in (select review_id from hyy.return_fact_llm where payload not like '%"review_cn":""%' and payload not like '%"tags":[]%')
 -- and country = 'US' and fasin = 'B0BGHGXYJX'
 
-and date_format(purchase_date,'%Y%m%d') >= 20250601
+and date_format(purchase_date,'%Y%m%d') >= 20250901
 order by purchase_date desc,length(review_en) desc;
 
 -- and date_format(review_date,'%Y%m%d') >= 20250901
