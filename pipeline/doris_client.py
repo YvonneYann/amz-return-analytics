@@ -181,8 +181,13 @@ class DorisClient:
                     value = f.get("value")
                     if operator != "eq":
                         raise ValueError(f"Unsupported operator: {operator}")
-                    sql += f" AND {field} = %s"
-                    params.append(value)
+                    if field == "applicable_scope":
+                        # Always include shared tags alongside the specific scope.
+                        sql += " AND (applicable_scope = %s OR applicable_scope = %s)"
+                        params.extend([value, "共享"])
+                    else:
+                        sql += f" AND {field} = %s"
+                        params.append(value)
             cur.execute(sql, params)
             rows = cur.fetchall()
         return {row["tag_code"]: row for row in rows}

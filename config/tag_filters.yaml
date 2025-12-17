@@ -1,5 +1,9 @@
-﻿tag_filters:
+tag_filters:
   - condition_name: level_eq_2
     field: level
     operator: eq
     value: 2
+  - condition_name: scope_example
+    field: applicable_scope
+    operator: eq
+    value: "卧式冰柜收纳篮"  # replace with target scope; "共享" tags are auto-included
