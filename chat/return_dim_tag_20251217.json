@@ -447,5 +447,21 @@
 		"effective_to": null,
 		"created_at": "2025-12-17 00:00:00",
 		"updated_at": "2025-12-17 00:00:00"
+	  },
+	  {
+		"applicable_scope": "卧式冰柜收纳篮",
+		"tag_code": "CAPACITY_EFF",
+		"tag_name_cn": "容量/装载空间不足（装不下食材/空间浪费）",
+		"category_code": "CAT_STRUCT_FIT",
+		"category_name_cn": "产品结构/适配体验",
+		"level": 2,
+		"definition": "用户抱怨篮筐自身的内部装载空间不足（如宽度/深度/有效容积不够），导致常见冷冻食材（大块肉、整鸡、披萨盒、大包装等）放不下，或放置后造成明显空间浪费，从而无法满足预期的装载与收纳需求。",
+		"boundary_note": "若核心是“篮筐放不进冷柜/影响开合/不适配 chest freezer/按 cu.ft 选型仍不适配”→ 归“尺寸/兼容性不符”；若核心是“装载后下垂变形/滑动/堆叠不稳/倾倒风险”→ 归“稳定性/承重不足”；若核心是“仍难找/难分区/FIFO 无改善/可视性差”→ 归“收纳改善不明显”。",
+		"is_active": 1,
+		"version": 1,
+		"effective_from": "2025-12-17",
+		"effective_to": null,
+		"created_at": "2025-12-17 03:16:28",
+		"updated_at": "2025-12-17 03:16:28"
 	  }
 ]}
