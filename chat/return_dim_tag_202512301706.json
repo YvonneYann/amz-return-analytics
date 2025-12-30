@@ -1,20 +1,132 @@
 {
 "return_dim_tag": [
 	{
-		"applicable_scope" : "沥水架",
-		"tag_code" : "CAPACITY_EFF",
-		"tag_name_cn" : "容量\/有效面积不足（含扩容效果不达标）",
+		"applicable_scope" : "透明背包",
+		"tag_code" : "CAPACITY_FIT",
+		"tag_name_cn" : "尺寸\/容量适配",
 		"category_code" : "CAT_STRUCT_FIT",
 		"category_name_cn" : "产品结构\/适配体验",
 		"level" : 2,
-		"definition" : "仅当用户抱怨的是架子本身能放的餐具\/碗盘数量少、层数有限、扩容后仍放不下等内部容量问题时使用",
-		"boundary_note" : "若抱怨的是厨房\/水槽\/台面等环境空间不够 → 属于 FIT_COMPAT 而非 CAPACITY_EFF。若由配件几何导致单一部位不可用→“分区\/配件设计不合理”。",
+		"definition" : "可用空间不足或结构限制，导致放不下关键物品（如笔记本\/活页夹\/水壶等），或放入后无法舒适闭合。",
+		"boundary_note" : "聚焦“装不装得下\/好不好装”；若闭合失败主因是拉链卡顿\/损坏→“拉链\/闭合失效”。",
 		"is_active" : 1,
 		"version" : 1,
-		"effective_from" : "2025-11-01",
+		"effective_from" : "2025-12-30",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "ZIPPER_CLOSURE",
+		"tag_name_cn" : "拉链\/闭合失效",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "拉链卡顿、咬布、难以顺畅开合、拉链齿\/拉头损坏或闭合不严，导致包无法正常使用。",
+		"boundary_note" : "只要用户抱怨“拉不上\/不好拉\/容易崩开\/开合费劲”，归此；若因装得太满导致难拉→“尺寸\/容量适配不符”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "COMFORT_CARRY",
+		"tag_name_cn" : "背负舒适度差",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "肩带过薄不加厚、勒肩、调节不顺或重量分配差，导致短时间背负即不适，影响上学\/通勤等高频使用。",
+		"boundary_note" : "聚焦“舒适度”；若强调“肩带会断\/连接不牢\/扛不住重量”→“肩带连接\/承重不可靠”；若不适主因是材质过硬\/边缘刮手→“气味\/手感体验差”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:50",
+		"updated_at" : "2025-12-30 08:17:50"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "POLICY_PASS",
+		"tag_name_cn" : "安检\/政策不合规",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "用户以学校\/场馆 Clear Bag 等入场政策为核心诉求，反馈该包在透明度、口袋结构或外部尺寸等方面无法满足政策要求，担心无法通过安检\/被拒绝入场。",
+		"boundary_note" : "只要核心诉求是“能否通过安检\/能否进场”，优先归此；若仅容量\/空间不足→“尺寸\/容量适配”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "STRAP_LOAD",
+		"tag_name_cn" : "肩带连接\/承重不可靠",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "用户反馈肩带与包体连接处、扣具或走线不牢，装载后明显变形或担心断裂\/脱落，认为承重安全性不足。",
+		"boundary_note" : "聚焦“强度\/承重安全”；若仅勒肩不舒服但未提断裂担忧→“背负舒适度差”；若主要是包体材质\/车线整体薄弱易裂→“做工\/耐用性不足”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "POCKET_ORG",
+		"tag_name_cn" : "口袋\/分区收纳不合理",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "前袋\/侧袋\/隔层数量、位置或尺寸不合理，导致小物件无处放、侧袋放不稳水瓶，收纳与拿取效率差。",
+		"boundary_note" : "聚焦“分区\/组织能力”；若核心是装不下大件\/容量不足→“尺寸\/容量适配不符”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:50",
+		"updated_at" : "2025-12-30 08:17:50"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "ODOR_FEEL",
+		"tag_name_cn" : "气味\/手感体验差",
+		"category_code" : "CAT_MATERIAL_LOOK",
+		"category_name_cn" : "材质与外观",
+		"level" : 2,
+		"definition" : "到手后存在明显塑料\/化学气味、气味久散不去；或材质过硬、边缘刮手、触感不舒适、刺激皮肤\/不适；以及由上述材料表现引发的健康\/安全担忧（如“可能有毒\/对孩子不安全\/不敢用\/怀疑合规背书”）",
+		"boundary_note" : "入场政策\/安检是否合规（clear bag policy、被拒入场）→ POLICY_PASS 优先；结构性质量\/耐用性风险（薄、易裂、开线、底部塌）→ BUILD_DURABILITY 优先；其余材料相关体验\/疑虑（味道、手感、刺激、担心有毒\/不安全\/不合规）→ ODOR_FEEL",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:50",
+		"updated_at" : "2025-12-30 08:17:50"
+	},
+	{
+		"applicable_scope" : "透明背包",
+		"tag_code" : "BUILD_DURABILITY",
+		"tag_name_cn" : "做工\/耐用性不足",
+		"category_code" : "CAT_MATERIAL_LOOK",
+		"category_name_cn" : "材质与外观",
+		"level" : 2,
+		"definition" : "材质偏薄、车线粗糙、边角易裂、底部无支撑易塌等，用户对产品长期耐用性缺乏信心。",
+		"boundary_note" : "拉链问题单独归“拉链\/闭合失效”；承重\/连接强度问题优先归“肩带连接\/承重不可靠”；仅主观不喜欢外观而未指向耐用性风险不打本标签。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-30",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:50",
+		"updated_at" : "2025-12-30 08:17:50"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -29,40 +141,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
-	},
-	{
-		"applicable_scope" : "沥水架",
-		"tag_code" : "FIT_COMPAT",
-		"tag_name_cn" : "尺寸\/兼容性不符",
-		"category_code" : "CAT_STRUCT_FIT",
-		"category_name_cn" : "产品结构\/适配体验",
-		"level" : 2,
-		"definition" : "与目标位置\/设备（如水槽、台面、柜体等）尺寸不匹配，导致无法放入、无法跨放，或间隙过大严重影响使用。",
-		"boundary_note" : "尺寸能放下且主要问题为某特定场景下出现倾斜\/回流水等→“沥水\/排水问题”或“整体稳定性差\/易晃动”；仅为轻微缝隙、基本不影响使用→可不打本标签；由页面规格错误引起的认知偏差将由页面描述评估单独处理，本标签不区分该类客观误差。",
-		"is_active" : 1,
-		"version" : 2,
-		"effective_from" : "2025-11-01",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
-	},
-	{
-		"applicable_scope" : "沥水架",
-		"tag_code" : "DRAIN_FLOW",
-		"tag_name_cn" : "沥水\/排水问题",
-		"category_code" : "CAT_STRUCT_FIT",
-		"category_name_cn" : "产品结构\/适配体验",
-		"level" : 2,
-		"definition" : "沥水方向或排水路径设计不佳，导致水流不到位或去向异常，如滴到台面\/地面、流不到水槽、易积水不易干等。",
-		"boundary_note" : "若主要问题为架体在特定场景下倾斜、下坠或一侧悬空→优先按“整体稳定性差\/易晃动”或“尺寸\/兼容性不符”打标；若仅为局部挡水条\/接水盘几何设计导致局部不稳或空间浪费→可考虑“分区\/配件设计不合理”；本标签仅聚焦水路\/沥水方向相关问题（如水滴外流、积水难排、滴在台面上等）。",
-		"is_active" : 1,
-		"version" : 2,
-		"effective_from" : "2025-11-01",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:47",
+		"updated_at" : "2025-12-30 08:17:47"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -77,8 +157,56 @@
 		"version" : 1,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:47",
+		"updated_at" : "2025-12-30 08:17:47"
+	},
+	{
+		"applicable_scope" : "沥水架",
+		"tag_code" : "FIT_COMPAT",
+		"tag_name_cn" : "尺寸\/兼容性不符",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "与目标位置\/设备（如水槽、台面、柜体等）尺寸不匹配，导致无法放入、无法跨放，或间隙过大严重影响使用。",
+		"boundary_note" : "尺寸能放下且主要问题为某特定场景下出现倾斜\/回流水等→“沥水\/排水问题”或“整体稳定性差\/易晃动”；仅为轻微缝隙、基本不影响使用→可不打本标签；由页面规格错误引起的认知偏差将由页面描述评估单独处理，本标签不区分该类客观误差。",
+		"is_active" : 1,
+		"version" : 2,
+		"effective_from" : "2025-11-01",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:47",
+		"updated_at" : "2025-12-30 08:17:47"
+	},
+	{
+		"applicable_scope" : "沥水架",
+		"tag_code" : "DRAIN_FLOW",
+		"tag_name_cn" : "沥水\/排水问题",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "沥水方向或排水路径设计不佳，导致水流不到位或去向异常，如滴到台面\/地面、流不到水槽、易积水不易干等。",
+		"boundary_note" : "若主要问题为架体在特定场景下倾斜、下坠或一侧悬空→优先按“整体稳定性差\/易晃动”或“尺寸\/兼容性不符”打标；若仅为局部挡水条\/接水盘几何设计导致局部不稳或空间浪费→可考虑“分区\/配件设计不合理”；本标签仅聚焦水路\/沥水方向相关问题（如水滴外流、积水难排、滴在台面上等）。",
+		"is_active" : 1,
+		"version" : 2,
+		"effective_from" : "2025-11-01",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:47",
+		"updated_at" : "2025-12-30 08:17:47"
+	},
+	{
+		"applicable_scope" : "沥水架",
+		"tag_code" : "CAPACITY_EFF",
+		"tag_name_cn" : "容量\/有效面积不足（含扩容效果不达标）",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
+		"level" : 2,
+		"definition" : "仅当用户抱怨的是架子本身能放的餐具\/碗盘数量少、层数有限、扩容后仍放不下等内部容量问题时使用",
+		"boundary_note" : "若抱怨的是厨房\/水槽\/台面等环境空间不够 → 属于 FIT_COMPAT 而非 CAPACITY_EFF。若由配件几何导致单一部位不可用→“分区\/配件设计不合理”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-11-01",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:47",
+		"updated_at" : "2025-12-30 08:17:47"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -93,8 +221,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -109,8 +237,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -125,8 +253,8 @@
 		"version" : 1,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -141,8 +269,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
 		"applicable_scope" : "沥水架",
@@ -157,27 +285,11 @@
 		"version" : 1,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
-		"tag_code" : "CAPACITY_EFF",
-		"tag_name_cn" : "容量\/装载空间不足（装不下食材）",
-		"category_code" : "CAT_STRUCT_FIT",
-		"category_name_cn" : "产品结构\/适配体验",
-		"level" : 2,
-		"definition" : "用户抱怨篮筐自身的内部装载空间不足（如宽度\/深度\/有效容积不够），导致常见冷冻食材（大块肉、整鸡、披萨盒、大包装等）放不下，从而无法满足预期的装载与收纳需求。典型表达包括：too small \/ smaller than expected(anticipated) \/ need bigger(larger) size \/ couldn’t fit (cuts of meat)。",
-		"boundary_note" : "若核心是“篮筐放不进冷柜\/影响开合\/不适配 chest freezer\/按 cu.ft 选型仍不适配\/篮筐无法铺满冷柜，导致waste space”→ 归“尺寸\/兼容性不符”；若核心是“装载后下垂变形\/滑动\/堆叠不稳\/倾倒风险”→ 归“稳定性\/承重不足”；若核心是“仍难找\/难分区\/FIFO 无改善\/可视性差”→ 归“收纳改善不明显”。当评论仅出现“smaller than expected\/anticipated、need bigger\/larger size、opt for larger size”等且未提到任何冷柜适配失败信号时，默认归本标签。",
-		"is_active" : 1,
-		"version" : 1,
-		"effective_from" : "2025-12-17",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
-	},
-	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
 		"tag_code" : "ORG_WEAK",
 		"tag_name_cn" : "收纳改善不明显（可视性\/FIFO\/效率未提升）",
 		"category_code" : "CAT_STRUCT_FIT",
@@ -189,11 +301,11 @@
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
 		"tag_code" : "ACCESS_POOR",
 		"tag_name_cn" : "取放不便（把手\/提篮体验差）",
 		"category_code" : "CAT_STRUCT_FIT",
@@ -205,27 +317,27 @@
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
-		"tag_code" : "FIT_COMPAT",
-		"tag_name_cn" : "尺寸\/兼容性不符",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
+		"tag_code" : "CAPACITY_EFF",
+		"tag_name_cn" : "容量\/装载空间不足（装不下食材）",
 		"category_code" : "CAT_STRUCT_FIT",
 		"category_name_cn" : "产品结构\/适配体验",
 		"level" : 2,
-		"definition" : "用户明确表达：由于产品外部尺寸\/形态与目标冷冻柜的内部空间\/结构不匹配，导致无法按预期使用。包括但不限于：放不进去 \/ 卡住 \/ 无法摆放到目标位置（层板间距不够、抽屉轨道\/导轨干涉、门内胆凸起干涉等）；影响开合（门关不上、开合被挡、抽拉受阻）；与冷冻柜类型\/结构不兼容（upright \/ chest \/ drawer freezer 等结构差异导致不可用）；按页面 cu.ft \/ 尺寸选型仍不适配（买前按适配范围选择，但到手仍发生物理不适配）；明显“空间形态不匹配”导致浪费空间（例如宽度\/深度形态不合，形成大量 dead space \/ waste space，属于“适配失败”的结果而不是“容量不够装食材”）",
-		"boundary_note" : "若能放下但主要是“承重后变形或晃动”，优先打“稳定性\/承重不足”；若核心抱怨是页面没说清导致误买，可叠加“页面信息\/选型指引不清”。若核心抱怨是“篮筐本身太小、装不下食材、需要更大号\/ smaller than expected(anticipated) \/ need bigger size”且未出现冷柜适配失败信号 → 优先打“容量\/装载空间不足",
+		"definition" : "用户抱怨篮筐自身的内部装载空间不足（如宽度\/深度\/有效容积不够），导致常见冷冻食材（大块肉、整鸡、披萨盒、大包装等）放不下，从而无法满足预期的装载与收纳需求。典型表达包括：too small \/ smaller than expected(anticipated) \/ need bigger(larger) size \/ couldn’t fit (cuts of meat)。",
+		"boundary_note" : "若核心是“篮筐放不进冷柜\/影响开合\/不适配 chest freezer\/按 cu.ft 选型仍不适配\/篮筐无法铺满冷柜，导致waste space”→ 归“尺寸\/兼容性不符”；若核心是“装载后下垂变形\/滑动\/堆叠不稳\/倾倒风险”→ 归“稳定性\/承重不足”；若核心是“仍难找\/难分区\/FIFO 无改善\/可视性差”→ 归“收纳改善不明显”。当评论仅出现“smaller than expected\/anticipated、need bigger\/larger size、opt for larger size”等且未提到任何冷柜适配失败信号时，默认归本标签。",
 		"is_active" : 1,
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
 		"tag_code" : "STAB_LOAD",
 		"tag_name_cn" : "稳定性\/承重不足（含变形、滑动、堆叠不稳）",
 		"category_code" : "CAT_STRUCT_FIT",
@@ -237,27 +349,27 @@
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
-		"tag_code" : "LOOK_COLOR",
-		"tag_name_cn" : "外观颜色\/做工不满意",
-		"category_code" : "CAT_MATERIAL_LOOK",
-		"category_name_cn" : "材质与外观",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
+		"tag_code" : "FIT_COMPAT",
+		"tag_name_cn" : "尺寸\/兼容性不符",
+		"category_code" : "CAT_STRUCT_FIT",
+		"category_name_cn" : "产品结构\/适配体验",
 		"level" : 2,
-		"definition" : "用户对颜色、质感、焊点\/焊缝、喷涂均匀度等主观不满意（“看起来廉价\/做工粗糙”）。",
-		"boundary_note" : "若做工问题已造成割手、刮破包装或损伤风险，优先打“安全\/刮伤风险”。",
+		"definition" : "用户明确表达：由于产品外部尺寸\/形态与目标冷冻柜的内部空间\/结构不匹配，导致无法按预期使用。包括但不限于：放不进去 \/ 卡住 \/ 无法摆放到目标位置（层板间距不够、抽屉轨道\/导轨干涉、门内胆凸起干涉等）；影响开合（门关不上、开合被挡、抽拉受阻）；与冷冻柜类型\/结构不兼容（upright \/ chest \/ drawer freezer 等结构差异导致不可用）；按页面 cu.ft \/ 尺寸选型仍不适配（买前按适配范围选择，但到手仍发生物理不适配）；明显“空间形态不匹配”导致浪费空间（例如宽度\/深度形态不合，形成大量 dead space \/ waste space，属于“适配失败”的结果而不是“容量不够装食材”）",
+		"boundary_note" : "若能放下但主要是“承重后变形或晃动”，优先打“稳定性\/承重不足”；若核心抱怨是页面没说清导致误买，可叠加“页面信息\/选型指引不清”。若核心抱怨是“篮筐本身太小、装不下食材、需要更大号\/ smaller than expected(anticipated) \/ need bigger size”且未出现冷柜适配失败信号 → 优先打“容量\/装载空间不足",
 		"is_active" : 1,
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
 		"tag_code" : "MATERIAL_RUST",
 		"tag_name_cn" : "材质\/防锈失效",
 		"category_code" : "CAT_MATERIAL_LOOK",
@@ -269,11 +381,27 @@
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
-		"applicable_scope" : "冰柜收纳篮 (卧式/立式)",
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
+		"tag_code" : "LOOK_COLOR",
+		"tag_name_cn" : "外观颜色\/做工不满意",
+		"category_code" : "CAT_MATERIAL_LOOK",
+		"category_name_cn" : "材质与外观",
+		"level" : 2,
+		"definition" : "用户对颜色、质感、焊点\/焊缝、喷涂均匀度等主观不满意（“看起来廉价\/做工粗糙”）。",
+		"boundary_note" : "若做工问题已造成割手、刮破包装或损伤风险，优先打“安全\/刮伤风险”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-17",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
+	},
+	{
+		"applicable_scope" : "冰柜收纳篮 (卧式\/立式)",
 		"tag_code" : "SAFETY_SCRATCH",
 		"tag_name_cn" : "安全\/刮伤风险（锐边毛刺\/刮破包装\/刮伤内胆）",
 		"category_code" : "CAT_MATERIAL_LOOK",
@@ -285,8 +413,8 @@
 		"version" : 1,
 		"effective_from" : "2025-12-17",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -301,40 +429,8 @@
 		"version" : 1,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
-	},
-	{
-		"applicable_scope" : "共享",
-		"tag_code" : "GUIDE_UNCLEAR",
-		"tag_name_cn" : "说明书\/使用指引缺失或不清",
-		"category_code" : "CAT_INSTALL_USE",
-		"category_name_cn" : "安装与使用体验",
-		"level" : 2,
-		"definition" : "包装内缺少清晰说明，或关键摆放\/堆叠\/提取方式没有指引，导致用户高试错仍达不到效果。",
-		"boundary_note" : "若问题发生在“页面选型信息缺失”，归“页面信息\/选型指引不清”（一个是到手后指导，一个是下单前信息）。",
-		"is_active" : 1,
-		"version" : 1,
-		"effective_from" : "2025-12-17",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:21",
-		"updated_at" : "2025-12-17 07:28:21"
-	},
-	{
-		"applicable_scope" : "共享",
-		"tag_code" : "INSTALL_COMPLEX",
-		"tag_name_cn" : "安装\/组装复杂（耗时高）",
-		"category_code" : "CAT_INSTALL_USE",
-		"category_name_cn" : "安装与使用体验",
-		"level" : 2,
-		"definition" : "安装\/组装步骤繁琐、耗时明显偏长，需额外工具或说明难以理解，用户明确表达“装起来很痛苦\/费劲”等感受。",
-		"boundary_note" : "若已安装完成且主要问题为螺丝\/卡扣反复松动或位置锁不住→“安装\/调节\/固定性差”；仅因页面未说明需要自行组装导致心理落差→“页面信息缺失\/误导”。",
-		"is_active" : 1,
-		"version" : 1,
-		"effective_from" : "2025-11-17",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -349,8 +445,40 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "共享",
+		"tag_code" : "GUIDE_UNCLEAR",
+		"tag_name_cn" : "说明书\/使用指引缺失或不清",
+		"category_code" : "CAT_INSTALL_USE",
+		"category_name_cn" : "安装与使用体验",
+		"level" : 2,
+		"definition" : "包装内缺少清晰说明，或关键摆放\/堆叠\/提取方式没有指引，导致用户高试错仍达不到效果。",
+		"boundary_note" : "若问题发生在“页面选型信息缺失”，归“页面信息\/选型指引不清”（一个是到手后指导，一个是下单前信息）。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-12-17",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:48",
+		"updated_at" : "2025-12-30 08:17:48"
+	},
+	{
+		"applicable_scope" : "共享",
+		"tag_code" : "INSTALL_COMPLEX",
+		"tag_name_cn" : "安装\/组装复杂（耗时高）",
+		"category_code" : "CAT_INSTALL_USE",
+		"category_name_cn" : "安装与使用体验",
+		"level" : 2,
+		"definition" : "安装\/组装步骤繁琐、耗时明显偏长，需额外工具或说明难以理解，用户明确表达“装起来很痛苦\/费劲”等感受。",
+		"boundary_note" : "若已安装完成且主要问题为螺丝\/卡扣反复松动或位置锁不住→“安装\/调节\/固定性差”；仅因页面未说明需要自行组装导致心理落差→“页面信息缺失\/误导”。",
+		"is_active" : 1,
+		"version" : 1,
+		"effective_from" : "2025-11-17",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -365,8 +493,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -381,40 +509,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
-	},
-	{
-		"applicable_scope" : "共享",
-		"tag_code" : "DOA_DAMAGED",
-		"tag_name_cn" : "损坏到货（DOA\/受损）",
-		"category_code" : "CAT_FULFILL_SERVICE",
-		"category_name_cn" : "履约与服务",
-		"level" : 2,
-		"definition" : "开箱即存在明显损伤、缺件或功能性问题，无法按正常形态使用。",
-		"boundary_note" : "仅包装受损但商品可用→“包装太薄\/防护不足”；若原本应在出厂阶段预装\/固定的关键部件（如橡胶脚垫、连接件）缺失或装错，导致用户开箱时即无法按说明正常安装\/使用，也归入本标签，而非“分区\/配件设计不合理”。",
-		"is_active" : 1,
-		"version" : 2,
-		"effective_from" : "2025-11-01",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
-	},
-	{
-		"applicable_scope" : "共享",
-		"tag_code" : "CS_POOR",
-		"tag_name_cn" : "品牌\/店铺服务不达标",
-		"category_code" : "CAT_FULFILL_SERVICE",
-		"category_name_cn" : "履约与服务",
-		"level" : 2,
-		"definition" : "客服响应慢、态度欠佳、处理不清或与承诺不一致等售后服务问题。",
-		"boundary_note" : "退换规则或流程本身引发的不满（如必须前往较远网点、仅支持特定快递点、周期\/步骤复杂等）→“退换信息\/政策体验不佳”；本标签仅聚焦客服响应\/态度\/处理质量等“人”的问题。",
-		"is_active" : 1,
-		"version" : 2,
-		"effective_from" : "2025-11-01",
-		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -429,8 +525,40 @@
 		"version" : 1,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "共享",
+		"tag_code" : "DOA_DAMAGED",
+		"tag_name_cn" : "损坏到货（DOA\/受损）",
+		"category_code" : "CAT_FULFILL_SERVICE",
+		"category_name_cn" : "履约与服务",
+		"level" : 2,
+		"definition" : "开箱即存在明显损伤、缺件或功能性问题，无法按正常形态使用。",
+		"boundary_note" : "仅包装受损但商品可用→“包装太薄\/防护不足”；若原本应在出厂阶段预装\/固定的关键部件（如橡胶脚垫、连接件）缺失或装错，导致用户开箱时即无法按说明正常安装\/使用，也归入本标签，而非“分区\/配件设计不合理”。",
+		"is_active" : 1,
+		"version" : 2,
+		"effective_from" : "2025-11-01",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
+	},
+	{
+		"applicable_scope" : "共享",
+		"tag_code" : "CS_POOR",
+		"tag_name_cn" : "品牌\/店铺服务不达标",
+		"category_code" : "CAT_FULFILL_SERVICE",
+		"category_name_cn" : "履约与服务",
+		"level" : 2,
+		"definition" : "客服响应慢、态度欠佳、处理不清或与承诺不一致等售后服务问题。",
+		"boundary_note" : "退换规则或流程本身引发的不满（如必须前往较远网点、仅支持特定快递点、周期\/步骤复杂等）→“退换信息\/政策体验不佳”；本标签仅聚焦客服响应\/态度\/处理质量等“人”的问题。",
+		"is_active" : 1,
+		"version" : 2,
+		"effective_from" : "2025-11-01",
+		"effective_to" : null,
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -445,8 +573,8 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:20",
-		"updated_at" : "2025-12-17 07:28:20"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
 	},
 	{
 		"applicable_scope" : "共享",
@@ -461,7 +589,7 @@
 		"version" : 2,
 		"effective_from" : "2025-11-01",
 		"effective_to" : null,
-		"created_at" : "2025-12-17 07:28:19",
-		"updated_at" : "2025-12-17 07:28:19"
+		"created_at" : "2025-12-30 08:17:49",
+		"updated_at" : "2025-12-30 08:17:49"
 	}
 ]}
