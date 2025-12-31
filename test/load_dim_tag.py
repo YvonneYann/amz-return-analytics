@@ -104,7 +104,7 @@ def upsert_dim_tags(records: List[Dict[str, Any]]) -> None:
 
 
 if __name__ == "__main__":
-    json_file = Path("chat/return_dim_tag_202512301233.json")
+    json_file = Path("chat/return_dim_tag_202512310952.json")
     if not json_file.exists():
         raise SystemExit(f"File not found: {json_file}")
     records = load_tags(json_file)
