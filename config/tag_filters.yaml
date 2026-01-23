@@ -6,4 +6,4 @@ tag_filters:
   - condition_name: scope_example
     field: applicable_scope
     operator: eq
-    value: "化妆包"  # replace with target scope; "共享" tags are auto-included
+    value: "冰柜收纳篮 (卧式/立式)"  # replace with target scope; "共享" tags are auto-included
